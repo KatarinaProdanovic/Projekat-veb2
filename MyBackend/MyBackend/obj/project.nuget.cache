@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "gAHVoQyy6gBMJfx2XHFG8KBJdmXosYFpnB9qNu6mp7fdXIvZCv0JgHbuCMTWvzFTspLJ7QLUc+lNdEUFqdCiNA==",
+  "dgSpecHash": "2130Of5wWjb/Dc8S1ue6+gMaIdUpkKfZfzbGXSdsCW+0wEb40tceT7970YmhTHEsG1ktbx0o79Ee4uXQiWvgYw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Katarina\\Desktop\\MyBackend\\MyBackend\\MyBackend.csproj",
+  "projectFilePath": "C:\\Users\\Katarina\\Desktop\\projVeb2\\Projekat-veb2\\MyBackend\\MyBackend\\MyBackend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Katarina\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\Katarina\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\Katarina\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
+    "C:\\Users\\Katarina\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\Katarina\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Katarina\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.1\\microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
     "C:\\Users\\Katarina\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",

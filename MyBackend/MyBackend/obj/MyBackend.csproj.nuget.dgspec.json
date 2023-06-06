@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Katarina\\Desktop\\MyBackend\\MyBackend\\MyBackend.csproj": {}
+    "C:\\Users\\Katarina\\Desktop\\projVeb2\\Projekat-veb2\\MyBackend\\MyBackend\\MyBackend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Katarina\\Desktop\\MyBackend\\MyBackend\\MyBackend.csproj": {
+    "C:\\Users\\Katarina\\Desktop\\projVeb2\\Projekat-veb2\\MyBackend\\MyBackend\\MyBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Katarina\\Desktop\\MyBackend\\MyBackend\\MyBackend.csproj",
+        "projectUniqueName": "C:\\Users\\Katarina\\Desktop\\projVeb2\\Projekat-veb2\\MyBackend\\MyBackend\\MyBackend.csproj",
         "projectName": "MyBackend",
-        "projectPath": "C:\\Users\\Katarina\\Desktop\\MyBackend\\MyBackend\\MyBackend.csproj",
+        "projectPath": "C:\\Users\\Katarina\\Desktop\\projVeb2\\Projekat-veb2\\MyBackend\\MyBackend\\MyBackend.csproj",
         "packagesPath": "C:\\Users\\Katarina\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Katarina\\Desktop\\MyBackend\\MyBackend\\obj\\",
+        "outputPath": "C:\\Users\\Katarina\\Desktop\\projVeb2\\Projekat-veb2\\MyBackend\\MyBackend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -49,6 +49,10 @@
             "AutoMapper": {
               "target": "Package",
               "version": "[12.0.1, )"
+            },
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",

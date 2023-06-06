@@ -12,8 +12,8 @@ using MyBackend.Infrastructure;
 namespace MyBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230528095335_Migration1")]
-    partial class Migration1
+    [Migration("20230606202054_MyMigrationa1")]
+    partial class MyMigrationa1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,12 +37,16 @@ namespace MyBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ConfirmPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -52,8 +56,7 @@ namespace MyBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Photo")
-                        .IsRequired()
+                    b.Property<string>("PhotoPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
@@ -70,25 +73,7 @@ namespace MyBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            Adress = "GLjub",
-                            DateOfBirth = new DateTime(2023, 5, 28, 11, 53, 34, 851, DateTimeKind.Local).AddTicks(8509),
-                            Email = "kaca@gmail.com",
-                            Name = "Katarina",
-                            Password = "ksjdlsf",
-                            Photo = "slika1",
-                            Surname = "prodanovic",
-                            Type = "user",
-                            UserName = "Kaca"
-                        });
                 });
 #pragma warning restore 612, 618
         }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using MyBackend.DTO;
 using MyBackend.Infrastructure;
 using MyBackend.Models;
@@ -16,7 +17,7 @@ namespace MyBackend.Services
             _mapper = mapper;
             _dbContext = dbContext;
         }
-        public UserDto AddUsers(UserDto newUser)
+        public UserDto AddUsers([FromBody] UserDto newUser)
         {
             User user = _mapper.Map<User>(newUser);
             _dbContext.Users.Add(user);
