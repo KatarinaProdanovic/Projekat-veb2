@@ -22,14 +22,17 @@ function useHttp () {
         hasConflict: data.message === 'Conflict'
       }
     }
-
+   
     setIsLoading(false)
+    
+   
     return data
   }, [])
 
   return {
     isLoading,
-    sendRequest
+    sendRequest,
+  
   }
 }
 

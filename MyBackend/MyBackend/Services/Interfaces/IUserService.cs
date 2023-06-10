@@ -9,5 +9,6 @@ namespace MyBackend.Services.Interfaces
         UserDto AddUsers(UserDto newUser);
         UserDto UpdateUsers(long id, UserDto newUserData);
         void DeleteUsers(long id);
+        string Login(LoginDto newDto);
     }
 }

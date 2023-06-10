@@ -19,8 +19,13 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import { styled } from "@mui/system";
+import { useSelector , useDispatch} from 'react-redux'
+import { setLog } from '../../store/user/actions'
+import { Logged } from '../../routes/sign-in/sign-in.component'
+
 const drawerWidth = 240
 const navItems = [ 'Sign up', 'Sign in', 'Log out']
+
 
 export const MyAppBar = styled(AppBar)({
   backgroundColor: "#b45ba2",
@@ -28,9 +33,52 @@ export const MyAppBar = styled(AppBar)({
   height: 50
 });
 
+
+
 function DrawerAppBar (props) {
   const navigate = useNavigate()
-  const [logg, setLogg] = useState(false) // inicajalno nije ulogovan
+  const logg = useSelector(state => state.isLogg.isLogged);
+  console.log(logg)
+  //const token = localStorage.getItem("token")
+ const [loging, setLoging] = useState(false)//inicijalno nema token(nije ulogovan)
+  useEffect(() => {
+   
+   const i = Logged(JSON.parse(decodeURIComponent(atob(localStorage.getItem("token").split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))['exp'])
+      setLoging(i)
+      if(logg){
+          if(!loging){
+       alert("Istekao vam je token iz nav bar")
+       
+        navigate("/")
+          }
+      }
+     
+   /*
+      fetch('/api/Artikli')
+      .then((response) => response.json())
+      .then((actualData) => {dispatch(updateItems(actualData)); dispatch(updateItems1(actualData))});
+
+      setChe(true) */
+   
+  }, [loging,logg])
+
+
+  const user = useSelector(state => state.loggedUser);
+    //console.log(user)
+    /*if(user !== {} && user !== undefined && user != null ){
+        const vr = Logged(user.logedUser.expiresAt)
+        
+        
+    }*/
+    
+  
+   
+    const dispatch = useDispatch();
+// const v = Logged(user.logedUser)
+ 
+  
+  
+   // inicajalno nije ulogovan
   // const dispatch = useDispatch()
   const { window } = props
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -41,13 +89,15 @@ function DrawerAppBar (props) {
   const handleSignUp = () => {
     navigate('/signup')
   }
-  const handleShop = () => {
-    navigate('/shop')
-  }
+  
   const handleLogin = () => {
     navigate('/signin')
   }
   const handleClick = (event) => {
+    dispatch(setLog(false))//false je ako se izloguje
+    //logg je false
+  navigate("/")//kad se izloguje ide na pocetnu stranicu
+
    /* event.preventDefault()
 
     dispatch(setLogged(false))
@@ -62,18 +112,18 @@ function DrawerAppBar (props) {
       </Typography>
       <Divider />
       <List id = 'my_component'>
-         <ListItem key={navItems[0]} disablePadding>
+         {((!loging) || (!logg)) && <ListItem key={navItems[0]} disablePadding>
             <ListItemButton sx={{ textAlign: 'center' }}>
               {<ListItemText primary={navItems[0]} onClick={handleSignUp}/>}
             </ListItemButton>
-          </ListItem>
-          {(logg === false) &&
+          </ListItem>}
+          {((!loging) || (!logg))  &&
           (<ListItem key={navItems[1]} disablePadding>
             <ListItemButton sx={{ textAlign: 'center' }}>
               {<ListItemText primary={navItems[1]} onClick={handleLogin}/>}
             </ListItemButton>
           </ListItem>)}
-          {(logg === true) &&
+          {((loging) && (logg)) &&
           (<ListItem key={navItems[2]} disablePadding>
             <ListItemButton sx={{ textAlign: 'center' }}>
               {<ListItemText primary={navItems[2]} onClick={handleClick}/>}
@@ -107,14 +157,14 @@ function DrawerAppBar (props) {
             SHOP
           </Typography>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-              <Button key={navItems[0]} sx={{ color: '#fff' }} onClick={handleSignUp}>
+             {((!loging) || (!logg)) && (< Button key={navItems[0]} sx={{ color: '#fff' }} onClick={handleSignUp}>
                 {navItems[0]}
-              </Button>
+              </Button>)} 
              
-             {(logg === false) && (<Button key={navItems[1]} sx={{ color: '#fff' }} onClick={handleLogin}>
+             {((!loging) || (!logg))  && (<Button key={navItems[1]} sx={{ color: '#fff' }} onClick={handleLogin}>
                 {navItems[1]}
               </Button>)}
-              {(logg === true) && (<Button key={navItems[2]} sx={{ color: '#fff' }} onClick={handleClick}>
+              {((loging) && (logg))   && (<Button key={navItems[2]} sx={{ color: '#fff' }} onClick={handleClick}>
                 {navItems[2]}
               </Button>)}
           </Box>

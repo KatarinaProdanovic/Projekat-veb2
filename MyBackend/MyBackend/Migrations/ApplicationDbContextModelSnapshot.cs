@@ -22,6 +22,64 @@ namespace MyBackend.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("MyBackend.Models.Seller", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Adress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConfirmPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhotoPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("isVerified")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Sellers");
+                });
+
             modelBuilder.Entity("MyBackend.Models.User", b =>
                 {
                     b.Property<long>("Id")
@@ -43,7 +101,7 @@ namespace MyBackend.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -70,7 +128,25 @@ namespace MyBackend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 2L,
+                            Adress = "GLjub",
+                            ConfirmPassword = "$2a$11$HP5NFJSLtdezTXt5Yi4vIe2n9KkY88gtIN38RbDVcxj.XwQEhrJmm",
+                            DateOfBirth = new DateTime(2023, 6, 10, 3, 53, 28, 368, DateTimeKind.Local).AddTicks(1435),
+                            Email = "kaca@gmail.com",
+                            Name = "Ana",
+                            Password = "$2a$11$F6pOw/sr4H6y32ejwicGiuiyU3/KwvZqjdBgz8xwdGzuY7Kboh4ye",
+                            Surname = "Anic",
+                            Type = "Admin",
+                            UserName = "Kaca"
+                        });
                 });
 #pragma warning restore 612, 618
         }

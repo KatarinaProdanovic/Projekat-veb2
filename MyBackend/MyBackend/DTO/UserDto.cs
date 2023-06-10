@@ -13,9 +13,12 @@ namespace MyBackend.DTO
         public string Surname { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Adress { get; set; }
-        public string Type { get; set; }
+        public string? Type { get; set; }
         public string? Photo { get; set; }
         public string? PhotoPath { get; set; }
+        public string ? IsVerified { get; set; }
+
+        public int? Tip { get; set; }
 
     }
    
