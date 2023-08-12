@@ -4,7 +4,7 @@ import { SET_USER, SET_LOGED_USER, SET_IS_LOGGED} from "./types"
 const initialState = {
  
   user: {},
-  logedUser: {},
+  logedUser: {},//trenutno ulogovan
   isLogged : false
  
 }

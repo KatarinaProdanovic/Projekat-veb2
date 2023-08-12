@@ -4,9 +4,12 @@ import { Logged } from '../sign-in/sign-in.component'
 
 import { Grid } from '@mui/material'
 
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Dashboard from '../../components/dashboard/dashboard';
 const SelerPage = () => {
   const navigate = useNavigate()
   const logg = useSelector(state => state.isLogg.isLogged);
@@ -34,12 +37,7 @@ const SelerPage = () => {
   }, [])
   
   return (
-    <Grid container>
-       <Grid item xs={12} sm={12} md={12}> {/* postavljanje medija upita */}
-       <h1>Welcome seller </h1>
-        <Outlet/>
-      </Grid>
-   </Grid>
+    <div><Dashboard/></div>
   )
 }
 export default SelerPage

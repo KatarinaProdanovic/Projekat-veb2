@@ -4,11 +4,15 @@ namespace MyBackend.Services.Interfaces
 {
     public interface ISellerService
     {
-        List<UserDto> GetCustomers();
+        List<UserDto> GetSellers();
         UserDto GetById(long id);
-        UserDto AddCustomer(UserDto newCustomer);
-        UserDto UpdateCustomers(long id, UserDto newCustomerData);
+       
+        UserDto UpdateSellers(UpdateDto newCustomerData);
         void DeleteCustomers(long id);
-        string Login(LoginDto newDto);
+      
+
+        string GetStatus(string mail);
+        EditProfileDto GetProfile(EditProfileDto dto);
+        
     }
 }

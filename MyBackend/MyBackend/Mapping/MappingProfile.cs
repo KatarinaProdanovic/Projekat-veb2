@@ -10,7 +10,10 @@ namespace MyBackend.Mapping
         {
             CreateMap<User, UserDto>().ReverseMap(); //Kazemo mu da mapira Subject na SubjectDto i obrnuto
             CreateMap<User, LoginDto>().ReverseMap();
-            CreateMap<Seller, UserDto>().ReverseMap();
+            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<User, UpdateDto>().ReverseMap();
+            CreateMap<User, EditProfileDto>().ReverseMap();
+            CreateMap<User, EditProfileDto>().ReverseMap();
         }
     }
 }

@@ -13,12 +13,22 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { purple } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
-import useHttp from '../../requests/useHttp';
+import useHttp from '../../requests-service/useHttp';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
+import Resizer from "react-image-file-resizer";
+import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { setVerif } from '../../store/sellers/actions';
+
+import { setLoggedUser,setLog } from '../../store/user/actions';
+
+
+import { setUser } from '../../store/user/actions';
+import Alert from '@mui/material/Alert';
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -26,9 +36,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { setUser } from '../../store/user/actions';
+import DrawerAppBar from '../../components/navigation/nav.component';
+
 import dayjs from 'dayjs';
 import {ImageUploadContainer, ImageUploadLabel, UploadedImage, UploadPlaceholder, ImageUploadInput} from "./sign-up.styles"
 import { RestaurantMenu, VolunteerActivismOutlined } from '@mui/icons-material';
@@ -62,10 +71,167 @@ export default function SignUp() {
   
   const [open, setOpen] = React.useState(false);
   const handleClose = () => {
+    if(mesageReg ==="You can't register with the same acount!!"){
+      setOpen(false);
+    setRequesting(false)
+    navigate("/signup")
+    }
+    else{
     setOpen(false);
     setRequesting(false)
     navigate("/signin")
+    }
   };
+  const handleCallbackResponse = async (response) => {
+    //console.log("Encoded JWT ID token: " + response.credential);
+    //setGoogleToken(response.credential);
+    //var userObject = jwt_decode(response.credential);
+    //setUser(userObject);
+    //send request for insert in database
+    var gtoken = response.credential;
+    const input = {
+      googleToken: gtoken,
+    };
+    const baseURL = process.env.REACT_APP_URL;
+    const endpoint = '/users/registerGoogle';
+    const requestConfigForExternalUser1 = {
+      url: `${baseURL}${endpoint}`,
+      method: 'POST',
+    
+      body: JSON.stringify({
+        
+        googleToken: gtoken,
+
+        
+      }),
+     headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+
+   
+  
+   const resp = await sendRequest(requestConfigForExternalUser1)
+   console.log(resp)
+   if(resp !== null){
+    localStorage.setItem("loging", "google")
+    const decodedToken = decodeURIComponent(atob(resp.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    const tokenData = JSON.parse(decodedToken);
+    localStorage.setItem('token', resp);
+    const role = tokenData['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+    const mail1 =   JSON.parse(decodeURIComponent(atob(localStorage.getItem("token").split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))['email']
+    console.log(mail1)
+    const requestBody = JSON.stringify(mail1);
+    
+    const baseURL = process.env.REACT_APP_URL;
+    const endpoint = '/users/getUser';
+
+    const requestConfigForExternalUser1 = {
+      url: `${baseURL}${endpoint}`,
+      method: 'POST',
+      body: requestBody,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    }
+
+   
+  
+   const dataExternalUser = await sendRequest(requestConfigForExternalUser1)
+   console.log(dataExternalUser)
+  
+    if(dataExternalUser !== null){
+     
+     //tu mi je vracen ceo objekat korisnika koji je 
+      dispatch(setUser(dataExternalUser))//to je samo korisnik koji ce se prikazivati u profilu
+     
+      
+   
+    }
+    
+
+    if(role === "Customer"){
+      dispatch(setLog(true))
+      const email = tokenData['email'];
+      const expiresAt = tokenData['exp'];
+      const issuer = tokenData['iss'];
+      const user = {
+        role, email, expiresAt, issuer
+      }
+    
+    dispatch(setLoggedUser(user))
+    console.log(role)
+      navigate("/userPage")
+    
+    } else if(role === "Seller"){
+      dispatch(setLog(true))
+      const email = tokenData['email'];
+      const expiresAt = tokenData['exp'];
+      const issuer = tokenData['iss'];
+      const verif = tokenData['isVerified'];
+      const user = {
+        role, email, expiresAt, issuer, verif
+      }
+      console.log(verif)
+    dispatch(setLoggedUser(user))
+   
+
+    if(verif === 'Approved'){
+      dispatch(setVerif(true))
+    }
+    console.log(verif)
+      navigate("/sellerPage")
+    
+    }
+    else{
+      dispatch(setLog(true))
+      const email = tokenData['email'];
+      const expiresAt = tokenData['exp'];
+      const issuer = tokenData['iss'];
+      const user = {
+        role, email, expiresAt, issuer
+      }
+      dispatch(setLoggedUser(user))
+     
+
+
+    console.log(role)
+      navigate("/adminPage")
+    }
+    
+    
+  
+  
+
+  /*
+  console.log(role); // 'User'
+  console.log(email); // 'kristinatodorovic853@gmail.com'
+  console.log(expiresAt); // 1686260239
+  console.log(issuer); // 'http://localhost:7006'
+  */ 
+  }
+  
+   console.log(resp)
+   // handleGoogleLogin(res.data);//da se uloguje
+    return navigate("/userPage");
+  };
+  React.useEffect(() => {
+    /*global google*/ // Ovaj komentar može biti koristan za neke alate za statičku analizu
+    if (typeof google !== 'undefined' && google.accounts) {
+      google.accounts.id.initialize({
+        client_id: '153217510821-8nm0cbg02q4mtcapqtlcfvnk1qeh4eke.apps.googleusercontent.com',
+        callback: handleCallbackResponse,
+      });
+      google.accounts.id.renderButton(document.getElementById('signInDiv'), {
+        theme: 'outline',
+        size: 'large',
+      });
+
+      google.accounts.id.prompt();
+    }
+  }, [handleCallbackResponse]);//f anything in this array changes it is going to run useEffect again, but we want this effect to only run once
 
 
   //const user = useSelector(state => state.user);
@@ -87,12 +253,13 @@ export default function SignUp() {
   
   const [password, setPassword] = React.useState('');
 
-
+const[mesageReg, setMes]= React.useState("");
   const [selectedDate, setSelectedDate] = React.useState(null);
   const { sendRequest, isLoading } = useHttp()
   const [selectedImage, setSelectedImage] = React.useState(null);
   const [base64String, setImagsetBaseURL] = React.useState('');
   const [isReguesting, setRequesting] = React.useState(false);
+  const [picture, setPicture] = React.useState(false);
   const [mojTip, setMojTip] = React.useState('');
   const handleUserNameChange = (e) => {
     const value = e.target.value;
@@ -136,6 +303,8 @@ export default function SignUp() {
       setConfirmError('');
     }
   };
+
+
   const handleNameChange = (e) => {
     const value = e.target.value;
     if (value.length < 3) {
@@ -152,19 +321,34 @@ export default function SignUp() {
       setLastNameError('');
     }
   };
+  const resizeFile = (file) =>
+    new Promise((resolve) => {
+      Resizer.imageFileResizer(
+        file,
+        300,
+        300,
+        "JPEG",
+        100,
+        0,
+        (uri) => {
+          resolve(uri);
+        },
+        "base64"
+      );
+    });
 
-  const handleImageChange = (event) => {
+  const handleImageChange = async (event) => {
+    try {
       const file = event.target.files[0];
       setSelectedImage(file);
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-      setImagsetBaseURL(event.target.result.split(',')[1]);
-     
+      const image = await resizeFile(file);
+      setPicture(image);
+    } catch (err) {
+      console.log(err);
+    }
   };
-   reader.readAsDataURL(file);
-   
-};
+
+
 const handleTypeChange = (event) => {
   setType(event.target.value);
   console.log(type)
@@ -255,7 +439,7 @@ const handleTypeChange = (event) => {
       console.log(type)
      
       
-    
+   
       const requestConfigForExternalUser = {
         url: `${baseURL}${endpoint}`,
         method: 'POST',
@@ -271,7 +455,7 @@ const handleTypeChange = (event) => {
           Tip : type,
           Adress : data.get('adresa'),
           DateOfBirth : dayjs(selectedDate).format('YYYY-MM-DD'),
-          Photo : base64String
+          Photo : picture
           
         }),
        headers: {
@@ -294,8 +478,8 @@ const handleTypeChange = (event) => {
           Tip : type,
           Adress : data.get('adresa'),
           DateOfBirth : dayjs(selectedDate).format('YYYY-MM-DD'),
-          Photo : base64String,
-          IsVerified : "ProcesiraSe"
+          Photo : picture,
+          IsVerified : "InProcessing"
 
           
         }),
@@ -304,31 +488,33 @@ const handleTypeChange = (event) => {
         }
       }
 
-      if(type === 0){
-        const dataExternalUser = await sendRequest(requestConfigForExternalUser)
-     console.log(dataExternalUser)
+     
+    
+     const dataExternalUser = await sendRequest(requestConfigForExternalUser1)
+     console.log(dataExternalUser.email)
       if(dataExternalUser !== null){
+        if(dataExternalUser.email === null){
+          setOpen(true)
+          setRequesting(true)
+          setMes("You can't register with the same acount!!");
+        }
+        else{
        //tu mi je vracen ceo objekat korisnika koji je 
         dispatch(setUser(dataExternalUser))//to je samo korisnik koji ce se prikazivati u profilu
         setRequesting(true)
+        setMes("You have successfully registered")
         setOpen(true)
        
-        //registrovan(to mogu da sacuvam u reduxu i da sluzi za prikaz podataka)
-      }
+        }
+     
       }
       else{
-     const dataExternalUser = await sendRequest(requestConfigForExternalUser1)
-     console.log(dataExternalUser)
-      if(dataExternalUser !== null){
-       //tu mi je vracen ceo objekat korisnika koji je 
-        dispatch(setUser(dataExternalUser))//to je samo korisnik koji ce se prikazivati u profilu
-        setRequesting(true)
         setOpen(true)
-       
-        
-      }//registrovan(to mogu da sacuvam u reduxu i da sluzi za prikaz podataka)
+        setMes("You can't register with the same acount!!");
       }
     } catch (error) {
+      setOpen(true)
+      setMes("You can't register with the same acount!!");
       console.log('failed', error)
     }
 
@@ -337,7 +523,7 @@ const handleTypeChange = (event) => {
  
   return (
   
-    
+    <><DrawerAppBar/>
     <ThemeProvider theme={defaultTheme}>
        {isLoading && (
          <Box
@@ -367,7 +553,7 @@ const handleTypeChange = (event) => {
             </DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
-              You have successfully registered
+             {mesageReg}
               </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -397,7 +583,7 @@ const handleTypeChange = (event) => {
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
             <Grid item xs={5}>
-              <ImageUploadContainer>
+              <ImageUploadContainer >
           <ImageUploadLabel htmlFor="image-upload">
             {selectedImage ? (
               <UploadedImage src={URL.createObjectURL(selectedImage)} alt="Selected" />
@@ -553,11 +739,15 @@ const handleTypeChange = (event) => {
                 </MyLink>
               </Grid>
             </Grid>
+            <Grid>
+            <div id="signInDiv"></div>
+            </Grid>
           </Box>
         </Box>
       </Container>)}
       
     </ThemeProvider>
+    </>
   
   );
 }

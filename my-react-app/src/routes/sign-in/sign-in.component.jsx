@@ -10,18 +10,19 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import useHttp from '../../requests/useHttp';
-
+import useHttp from '../../requests-service/useHttp';
+import DrawerAppBar from '../../components/navigation/nav.component';
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-
+import { setVerif } from '../../store/sellers/actions';
 
 import { setLoggedUser,setLog } from '../../store/user/actions';
 import { purple } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
 
-
-
+import { setUser } from '../../store/user/actions';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 const ColorButton = styled(Button)(({ theme }) => ({
   color: theme.palette.getContrastText(purple[500]),
   backgroundColor: purple[500],
@@ -36,7 +37,7 @@ const defaultTheme = createTheme();
 
 export function Logged(tokenExp){
   const currentTime = Math.floor(Date.now() / 1000); // Pretvaranje trenutnog vremena u sekunde
-  console.log(currentTime)
+ 
 if (tokenExp < currentTime) {
   return false;//token istekao
 } else {
@@ -78,7 +79,7 @@ export function IsSeller(role){
 export function IsVerif(verif){//to cu koristiit za neke druge stranice
  
 
-  if (verif === "Odobreno") {
+  if (verif ==='Approved') {
     return true;
   } else {
     return false;
@@ -91,7 +92,9 @@ export default function SignIn() {
   
   const { sendRequest } = useHttp()
 
-  
+  const[isError, setIsError] = React.useState(false);
+    const[message, setMessage] = React.useState("");
+   
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -155,12 +158,51 @@ export default function SignIn() {
         }
       }
       const token = await sendRequest(requestConfigForExternalUser)
-      
+      if(token == null){
+       
+          setIsError(true)
+          console.log("Nijeee")
+          setMessage("Incorrect email od password")
+        
+      }
+
       if(token !== null){
         const decodedToken = decodeURIComponent(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
         const tokenData = JSON.parse(decodedToken);
         localStorage.setItem('token', token);
         const role = tokenData['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+        const mail1 =   JSON.parse(decodeURIComponent(atob(localStorage.getItem("token").split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))['email']
+        console.log(mail1)
+        const requestBody = JSON.stringify(mail1);
+        
+        const baseURL = process.env.REACT_APP_URL;
+        const endpoint = '/users/getUser';
+
+        const requestConfigForExternalUser1 = {
+          url: `${baseURL}${endpoint}`,
+          method: 'POST',
+          body: requestBody,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: "Bearer " + localStorage.getItem("token")
+          }
+        }
+  
+       
+      
+       const dataExternalUser = await sendRequest(requestConfigForExternalUser1)
+       console.log(dataExternalUser)
+      
+        if(dataExternalUser !== null){
+         
+         //tu mi je vracen ceo objekat korisnika koji je 
+          dispatch(setUser(dataExternalUser))//to je samo korisnik koji ce se prikazivati u profilu
+         
+          
+       
+        }
+        
 
         if(role === "Customer"){
           dispatch(setLog(true))
@@ -170,7 +212,7 @@ export default function SignIn() {
           const user = {
             role, email, expiresAt, issuer
           }
-          
+        
         dispatch(setLoggedUser(user))
         console.log(role)
           navigate("/userPage")
@@ -184,8 +226,13 @@ export default function SignIn() {
           const user = {
             role, email, expiresAt, issuer, verif
           }
-          
+          console.log(verif)
         dispatch(setLoggedUser(user))
+       
+
+        if(verif === 'Approved'){
+          dispatch(setVerif(true))
+        }
         console.log(verif)
           navigate("/sellerPage")
         
@@ -199,6 +246,9 @@ export default function SignIn() {
             role, email, expiresAt, issuer
           }
           dispatch(setLoggedUser(user))
+         
+
+
         console.log(role)
           navigate("/adminPage")
         }
@@ -214,6 +264,7 @@ export default function SignIn() {
       console.log(issuer); // 'http://localhost:7006'
       */ 
       }
+      
     } catch (error) {
       console.log('failed', error)
     }
@@ -222,6 +273,8 @@ export default function SignIn() {
  
   //console.log(user1.loggedUser.email)
   return (
+    <>
+    <DrawerAppBar/>
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -239,6 +292,10 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
+          {isError && (<Stack sx={{ width: '100%' }} spacing={2}>
+      <Alert severity="error">{message}</Alert>
+     
+    </Stack>)}
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
@@ -285,5 +342,6 @@ export default function SignIn() {
         </Box>
       </Container>
     </ThemeProvider>
+    </>
   );
 }

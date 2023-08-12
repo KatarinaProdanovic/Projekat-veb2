@@ -13,7 +13,7 @@ import { IsUser, Logged, IsSeller, IsAdmin } from './routes/sign-in/sign-in.comp
 import { useSelector} from 'react-redux'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import AdminPage from './routes/admin/adminPage'
+import AdminPage from "../src/routes/admin/adminPage"
 const App = () => {
   const navigate = useNavigate()
   const [loging, setLoging] = useState(false)//inicijalno nema token(nije ulogovan)
@@ -48,10 +48,6 @@ const App = () => {
    
   }, [loging, userRole, logg, selerRole])
  
-
-   
-    
-
 console.log(userRole)
 console.log(selerRole)
 console.log(loging)
@@ -59,7 +55,7 @@ console.log(logg)
 return (
     <Grid container spacing={6}>
        <Grid item xs={12} sm={12} md={12}> {/* postavljanje medija upita */}
-       <DrawerAppBar/>
+     
       </Grid>
       <Grid item xs={12} sm={12} md={12}> {/* postavljanje medija upita */}
       <Routes>

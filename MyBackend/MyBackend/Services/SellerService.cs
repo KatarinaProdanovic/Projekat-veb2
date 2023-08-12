@@ -1,12 +1,22 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MyBackend.DTO;
 using MyBackend.Infrastructure;
 using MyBackend.Models;
 using MyBackend.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
+
+using System.Net;
 using System.Security.Claims;
 using System.Text;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+using Org.BouncyCastle.Crypto.Macs;
+using System;
+using System.Net.Mail;
+using MyBackend.Repository.Interfaces;
 
 namespace MyBackend.Services
 {
@@ -14,14 +24,16 @@ namespace MyBackend.Services
     {
 
         private readonly IMapper _mapper;
-        private readonly ApplicationDbContext _dbContext;
+      
         private readonly IConfigurationSection _secretKey;
+        private readonly IUserRepository _userRepository;
 
-        public SellerService(IMapper mapper, ApplicationDbContext dbContext, IConfiguration config)
+        public SellerService(IMapper mapper,IConfiguration config, IUserRepository userRepository)
         {
             _mapper = mapper;
-            _dbContext = dbContext;
             _secretKey = config.GetSection("SecretKey");
+            _userRepository = userRepository;
+
         }
         public string crypto(string password)
         {
@@ -29,22 +41,7 @@ namespace MyBackend.Services
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
             return passwordHash;
         }
-        public UserDto AddCustomer(UserDto newCustomer)
-        {
-
-            Seller customer = _mapper.Map<Seller>(newCustomer);
-            Seller customer1 = new Seller();
-            customer1 = customer;
-
-            customer1.Password = crypto(customer.Password);
-            customer1.ConfirmPassword = crypto(customer.ConfirmPassword);
-
-            _dbContext.Sellers.Add(customer1);
-            _dbContext.SaveChanges();
-
-            return _mapper.Map<UserDto>(newCustomer);
-        }
-
+       
         public void DeleteCustomers(long id)
         {
             throw new NotImplementedException();
@@ -55,56 +52,103 @@ namespace MyBackend.Services
             throw new NotImplementedException();
         }
 
-        public List<UserDto> GetCustomers()
+        public List<UserDto> GetSellers()
         {
-            throw new NotImplementedException();
+            return _mapper.Map<List<UserDto>>(_userRepository.GetSellerForStatusS());
         }
 
-        public string Login(LoginDto newDto)
-        {
-            List<Seller> customers = new List<Seller>();
 
-            customers = _dbContext.Sellers.ToList();
+
+
+        public static void SendEmail(string username, string password, string recipientEmail, string subject, string body)
+        {
+            var fromEmail = "draganaprodanovic00@gmail.com"; // Unesite vašu email adresu ovde
+            var smtpHost = "smtp.elasticemail.com"; // Postavite SMTP server za ElasticEmail
+            var smtpPort = 2525; // Port za ElasticEmail SMTP server
+
+            using (var client = new System.Net.Mail.SmtpClient(smtpHost, smtpPort))
+            {
+                client.UseDefaultCredentials = false;
+                client.EnableSsl = true;
+                client.Credentials = new NetworkCredential(username, password);
+
+                using (var message = new MailMessage())
+                {
+                    message.From = new MailAddress(fromEmail);
+                    message.To.Add(new MailAddress(recipientEmail));
+                    message.Subject = subject;
+                    message.Body = body;
+                    message.IsBodyHtml = true;
+
+                    try
+                    {
+                        client.Send(message);
+                        Console.WriteLine("Email sent successfully!");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Failed to send email. Error message: " + ex.Message);
+                    }
+                }
+            }
+        }
+
+        public UserDto UpdateSellers([FromBody] UpdateDto newUserData)
+        {
+            User seller = _userRepository.GetById(newUserData.Id);
+            if (seller != null)
+            {
+                seller.isVerified = 0;
+
+                var vr = newUserData.IsVerified;
+                var recipientEmail ="test@yopmail.com";
+                var subject = "Status of verification";
+                var bodyHtml = $"<h1>Hello, your status of verification is</h1><p>{vr}</p>";
+                SendEmail("draganaprodanovic00@gmail.com", "9C62962B146C0BFEA22247C6919D19E64A18", recipientEmail, subject, bodyHtml);
+
+            }
+
+            _userRepository.saveChanges(); //Samo menjanje polja ucitanog studenta iz baze podataka je dovoljno
+
+
+           
+
+
+            return _mapper.Map<UserDto>(seller);
+        } 
+
+        public string GetStatus(string mail)
+        {
+            List<User> sellers = new List<User>();
+
+            sellers = _userRepository.GetAllUsers();
+            if (sellers.Count == 0)
+            {
+                return null;
+            }
+            User customer = sellers.First(x => x.Email == mail);
+
+            if (customer == null) { return null; }
+            return customer.isVerified.ToString();
+
+
+        }
+     
+
+
+        public EditProfileDto GetProfile([FromBody] EditProfileDto newUserData)
+        {
+
+            List<User> customers = new List<User>();
+            customers = _userRepository.GetAllUsers();
             if (customers.Count == 0)
             {
                 return null;
             }
-            Seller customer = customers.First(x => x.Email == newDto.Email);
-
-            if (customer == null) { return null; }
-
-            if (BCrypt.Net.BCrypt.Verify(newDto.Password, customer.Password))//Uporedjujemo hes pasvorda iz baze i unetog pasvorda
-            {
-                List<Claim> claims = new List<Claim>();
-
-                claims.Add(new Claim(ClaimTypes.Role, customer.Type)); //Add user type to claim
-
-                claims.Add(new Claim("email", customer.Email));
-                //mozemo izmisliti i mi neki nas claim
-
-
-
-                SymmetricSecurityKey secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey.Value));
-                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-                var tokeOptions = new JwtSecurityToken(
-                    issuer: "http://localhost:7006", //url servera koji je izdao token
-                    claims: claims, //claimovi
-                    expires: DateTime.Now.AddMinutes(2), //vazenje tokena u minutama
-                    signingCredentials: signinCredentials //kredencijali za potpis
-                );
-                string tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-                return tokenString;
-            }
-            else
-            {
-                return null;
-            }
+            User customer = customers.First(x => x.Email == newUserData.Email);
+            return _mapper.Map<EditProfileDto>(customer);
         }
-
-        public UserDto UpdateCustomers(long id, UserDto newUserData)
-        {
-            throw new NotImplementedException();
-        }
+       
 
     }
 }

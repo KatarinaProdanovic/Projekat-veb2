@@ -45,9 +45,9 @@ function DrawerAppBar (props) {
    
    const i = Logged(JSON.parse(decodeURIComponent(atob(localStorage.getItem("token").split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))['exp'])
       setLoging(i)
-      if(logg){
+      /*if(logg){
           if(!loging){
-       alert("Istekao vam je token iz nav bar")
+       alert("Istekao vam je token ")
        
         navigate("/")
           }
@@ -60,7 +60,7 @@ function DrawerAppBar (props) {
 
       setChe(true) */
    
-  }, [loging,logg])
+  }, [])
 
 
   const user = useSelector(state => state.loggedUser);

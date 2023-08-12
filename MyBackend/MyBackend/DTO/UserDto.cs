@@ -1,4 +1,4 @@
-﻿using MyBackend.Models;
+﻿using MyBackend.constants;
 
 namespace MyBackend.DTO
 {
@@ -13,14 +13,12 @@ namespace MyBackend.DTO
         public string Surname { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Adress { get; set; }
-        public string? Type { get; set; }
+        public UserType? Type { get; set; }
         public string? Photo { get; set; }
         public string? PhotoPath { get; set; }
-        public string ? IsVerified { get; set; }
+        public string  IsVerified { get; set; }
 
         public int? Tip { get; set; }
 
     }
-   
-
 }

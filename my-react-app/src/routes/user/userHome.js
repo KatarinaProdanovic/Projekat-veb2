@@ -7,6 +7,7 @@ import { Grid } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Dashboard from '../../components/dashboard/dashboard'
 const UserPage = () => {
   const navigate = useNavigate()
   const logg = useSelector(state => state.isLogg.isLogged);
@@ -17,12 +18,7 @@ const UserPage = () => {
    
    const i = Logged(JSON.parse(decodeURIComponent(atob(localStorage.getItem("token").split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))['exp'])
    console.log(i) 
-   setLoging(i)
-    
-          if(!i){
-       alert("Istekao vam je token")
-        navigate("/")
-          }
+   
       
      
    /*
@@ -35,12 +31,7 @@ const UserPage = () => {
   }, [])
   
   return (
-    <Grid container>
-       <Grid item xs={12} sm={12} md={12}> {/* postavljanje medija upita */}
-       <h1>Welcome </h1>
-        <Outlet/>
-      </Grid>
-   </Grid>
+    <div><Dashboard/></div>
   )
 }
 export default UserPage

@@ -7,6 +7,9 @@ using MyBackend.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using MyBackend.Configuration;
+using MyBackend.Repository.Interfaces;
+using MyBackend.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -34,6 +38,20 @@ builder.Services.AddSingleton(mapper);
         
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISellerService, SellerService>();
+
+//repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Seller", policy => policy.RequireClaim("Seller"));
+    options.AddPolicy("Admin", policy => policy.RequireClaim("Admin"));
+    options.AddPolicy("Customer", policy => policy.RequireClaim("Customer"));
+
+    //Ovde mozemo kreirati pravilo za validaciju nekog naseg claima
+});
 
 builder.Services.AddAuthentication(opt => {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -51,6 +69,11 @@ builder.Services.AddAuthentication(opt => {
                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["SecretKey"]))//navodimo privatni kljuc kojim su potpisani nasi tokeni
               };
           });
+builder.Services.AddAuthentication().AddFacebook(facebookOptions =>
+{
+    facebookOptions.AppId = "252120644281035";
+    facebookOptions.AppSecret = "c92c2e5a404473486e3506483b695d24";
+});
 
 builder.Services.AddCors(options =>
 {
@@ -71,12 +94,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors(_cors);
+app.UseRouting();
+app.UseStaticFiles();
 
 app.UseAuthentication();
-           
-app.UseHttpsRedirection();
 app.UseAuthorization();
-app.UseRouting();
+
+app.UseHttpsRedirection();
 
 
 app.UseEndpoints(endpoints =>
