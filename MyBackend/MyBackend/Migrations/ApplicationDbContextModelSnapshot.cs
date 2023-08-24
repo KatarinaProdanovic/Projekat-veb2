@@ -41,8 +41,14 @@ namespace MyBackend.Migrations
                     b.Property<DateTime>("DeliveryDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsCenceled")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -181,11 +187,11 @@ namespace MyBackend.Migrations
                         {
                             Id = 2,
                             Adress = "GLjub",
-                            ConfirmPassword = "$2a$11$4y5K8vBX4N9G2JoqyxPY3uddfv5cqNzDp1yjsEvnsSt0xSLIDITuW",
-                            DateOfBirth = new DateTime(2023, 8, 12, 16, 24, 2, 241, DateTimeKind.Local).AddTicks(3780),
+                            ConfirmPassword = "$2a$11$e2ewBrZj98oYEk6F6XvKiuaeEZyF0Hjch/PT72.bknizU0d0zZ6sO",
+                            DateOfBirth = new DateTime(2023, 8, 20, 18, 47, 41, 694, DateTimeKind.Local).AddTicks(9162),
                             Email = "kaca@gmail.com",
                             Name = "Ana",
-                            Password = "$2a$11$icPA4CWH3EoypUGfkNfDaedxQl1fpSGQrnHOxUxD3bOYI3UbUtuR6",
+                            Password = "$2a$11$UvFWTSn8j3qgO9/9beBOVOQbQOINh7EIqJhKLHRz2sOkzdIYylkbi",
                             Surname = "Anic",
                             Type = 0,
                             UserName = "Kaca",

@@ -22,7 +22,7 @@ import { styled } from "@mui/system";
 import { useSelector , useDispatch} from 'react-redux'
 import { setLog } from '../../store/user/actions'
 import { Logged } from '../../routes/sign-in/sign-in.component'
-
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 const drawerWidth = 240
 const navItems = [ 'Sign up', 'Sign in', 'Log out']
 
@@ -105,6 +105,19 @@ function DrawerAppBar (props) {
     setLogg(localStorage.getItem('logged'))
     navigate('/')*/
   }
+  const handleClick1 = (event) => {
+    if(user?.logedUser.role ==="Seller"){
+      navigate("/sellerPage") 
+    }
+    else if(user?.logedUser.role ==="Admin"){
+      navigate("/adminPage")
+    }
+    else{
+      navigate("/userPage")
+    }
+
+   // Vraćanje na prethodnu stranicu
+  }
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
       <Typography variant="h6" sx={{ my: 2 }}>
@@ -129,6 +142,14 @@ function DrawerAppBar (props) {
               {<ListItemText primary={navItems[2]} onClick={handleClick}/>}
             </ListItemButton>
           </ListItem>)}
+          {((loging) && (logg)) &&
+          (<ListItem key={navItems[2]} disablePadding>
+            <ListItemButton sx={{ textAlign: 'center' }}>
+              {<ListItemText primary={navItems[2]} onClick={handleClick1}/>}
+            </ListItemButton>
+          </ListItem>)}
+          
+          
       </List>
     </Box>
   )
@@ -154,8 +175,17 @@ function DrawerAppBar (props) {
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
           >
-            SHOP
+        
+            {((loging) && (logg))   && (<KeyboardBackspaceIcon key={navItems[2]} sx={{ color: '#fff' }} onClick={handleClick1}>
+                {navItems[2]} &nbsp;&nbsp;&nbsp;
+              </KeyboardBackspaceIcon>
+              )}
+            
+            {(!loging || !logg) && (
+  <span style={{ marginLeft: '10px' }}>SHOP</span>
+)}
           </Typography>
+         
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
              {((!loging) || (!logg)) && (< Button key={navItems[0]} sx={{ color: '#fff' }} onClick={handleSignUp}>
                 {navItems[0]}
@@ -167,6 +197,7 @@ function DrawerAppBar (props) {
               {((loging) && (logg))   && (<Button key={navItems[2]} sx={{ color: '#fff' }} onClick={handleClick}>
                 {navItems[2]}
               </Button>)}
+             
           </Box>
         </Toolbar>
       </MyAppBar>

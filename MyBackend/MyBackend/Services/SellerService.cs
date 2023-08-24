@@ -108,7 +108,7 @@ namespace MyBackend.Services
 
             }
 
-            _userRepository.saveChanges(); //Samo menjanje polja ucitanog studenta iz baze podataka je dovoljno
+            _userRepository.saveChanges();
 
 
            

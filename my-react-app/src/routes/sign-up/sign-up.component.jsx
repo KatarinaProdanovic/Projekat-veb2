@@ -83,11 +83,6 @@ export default function SignUp() {
     }
   };
   const handleCallbackResponse = async (response) => {
-    //console.log("Encoded JWT ID token: " + response.credential);
-    //setGoogleToken(response.credential);
-    //var userObject = jwt_decode(response.credential);
-    //setUser(userObject);
-    //send request for insert in database
     var gtoken = response.credential;
     const input = {
       googleToken: gtoken,
@@ -488,30 +483,36 @@ const handleTypeChange = (event) => {
         }
       }
 
-     
+     if(data.get('userName') && data.get('email')  &&  data.get('password') && data.get('confirmpassword') && data.get('name') && data.get('lastName') && data.get('adresa')){
+      const dataExternalUser = await sendRequest(requestConfigForExternalUser1)
+      console.log(dataExternalUser.email)
+       if(dataExternalUser !== null){
+         if(dataExternalUser.email === null){
+           setOpen(true)
+           setRequesting(true)
+           setMes("You can't register with the same acount!!");
+         }
+         else{
+        //tu mi je vracen ceo objekat korisnika koji je 
+         dispatch(setUser(dataExternalUser))//to je samo korisnik koji ce se prikazivati u profilu
+         setRequesting(true)
+         setMes("You have successfully registered")
+         setOpen(true)
+        
+         }
+      
+       }
+       else{
+         setOpen(true)
+         setMes("You can't register with the same acount!!");
+       }
+     }
+     else{
+      setOpen(true)
+      setMes("You don't enter all required fields!!");
+     }
     
-     const dataExternalUser = await sendRequest(requestConfigForExternalUser1)
-     console.log(dataExternalUser.email)
-      if(dataExternalUser !== null){
-        if(dataExternalUser.email === null){
-          setOpen(true)
-          setRequesting(true)
-          setMes("You can't register with the same acount!!");
-        }
-        else{
-       //tu mi je vracen ceo objekat korisnika koji je 
-        dispatch(setUser(dataExternalUser))//to je samo korisnik koji ce se prikazivati u profilu
-        setRequesting(true)
-        setMes("You have successfully registered")
-        setOpen(true)
-       
-        }
      
-      }
-      else{
-        setOpen(true)
-        setMes("You can't register with the same acount!!");
-      }
     } catch (error) {
       setOpen(true)
       setMes("You can't register with the same acount!!");

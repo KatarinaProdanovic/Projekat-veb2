@@ -2,6 +2,7 @@ import { combineReducers, createStore } from "redux";
 
 import { addUserReducer, addLoggedUserReducer, addIsLog } from "./user/reducers";
 import { addSellersReducer , addVerifReducer} from "./sellers/reducers";
+import { addArticleReducer } from "./article/reducers";
 
 // glavna(inicijalna saga
 const rootReducer = combineReducers({
@@ -10,7 +11,8 @@ const rootReducer = combineReducers({
   loggedUser : addLoggedUserReducer,
   isLogg : addIsLog,
   sellers: addSellersReducer,
-  isVerif : addVerifReducer
+  isVerif : addVerifReducer,
+  articles: addArticleReducer
   //
 });
 const store = createStore(rootReducer);

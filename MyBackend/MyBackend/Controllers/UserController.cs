@@ -51,9 +51,7 @@ namespace MyBackend.Controllers
                 registerDto.Name = userName;
                 registerDto.Surname = userLastname;
                 registerDto.Photo = userPicture;
-
-                //dodaj proveru ako ne postoji onda tek da ga doda
-              
+   
      
                 var jsonResponse = JsonConvert.SerializeObject(_userService.RegisterGoogle(userEmail, userName, userLastname, userPicture));
                 return Ok(jsonResponse);
@@ -85,7 +83,30 @@ namespace MyBackend.Controllers
                 {
                     return BadRequest("Password must be at least 6 characters long");
                 }
-
+                if (user.UserName == "" || user.UserName.Length < 2)
+                {
+                    return BadRequest("User name  must be at least 2 characters long");
+                }
+                if (user.Name == "" || user.Name.Length < 2)
+                {
+                    return BadRequest("Name must be at least 2 characters long");
+                }
+                if (user.Adress == "" || user.Adress.Length < 6)
+                {
+                    return BadRequest("Address must be at least 6 characters long");
+                }
+                if (user.Adress == "" || user.Adress.Length < 6)
+                {
+                    return BadRequest("Address must be at least 6 characters long");
+                }
+                if (user.Email == "" || !user.Email.Contains("@"))
+                {
+                    return BadRequest("Invalid email");
+                }
+                if (user.Tip == null)
+                {
+                    return BadRequest("Invalid type");
+                }
                 UserDto user1 = new UserDto();
                 user1 = user;
 
@@ -95,11 +116,7 @@ namespace MyBackend.Controllers
                     return BadRequest("Confirm password must be equal to password");
                 }
 
-
-                // Sačuvajte putanju do slike (imagePath) u bazi podataka, na primer kao deo entiteta korisnika
                 byte[] imageBytes = Convert.FromBase64String(GetBase64Data(user.Photo));
-
-                // Ime foldera koji želite da kreirate unutar projekta
                 string folderName = "UserPhotos";
 
                 // Provera da li folder postoji, ako ne, kreirajte ga
@@ -124,7 +141,6 @@ namespace MyBackend.Controllers
                
                 if(user1.Tip == 0) {
                     user1.Type = constants.UserType.Customer;
-                   
                     return Ok(_userService.AddUsers(user1));
                 }
                 else

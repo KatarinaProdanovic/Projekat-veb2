@@ -38,13 +38,17 @@ builder.Services.AddSingleton(mapper);
         
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISellerService, SellerService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 //repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 
 
-builder.Services.AddAuthorization(options =>
+builder.Services.AddAuthorization(options =>//to mogu opbrisati
 {
     options.AddPolicy("Seller", policy => policy.RequireClaim("Seller"));
     options.AddPolicy("Admin", policy => policy.RequireClaim("Admin"));

@@ -31,7 +31,7 @@ const UserPage = () => {
   }, [])
   
   return (
-    <div><Dashboard/></div>
+    <><div><Dashboard /></div></>
   )
 }
 export default UserPage

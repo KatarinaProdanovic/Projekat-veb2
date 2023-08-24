@@ -14,6 +14,7 @@ import { useSelector} from 'react-redux'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdminPage from "../src/routes/admin/adminPage"
+import ArticleCompo from './routes/seller/articleEdit'
 const App = () => {
   const navigate = useNavigate()
   const [loging, setLoging] = useState(false)//inicijalno nema token(nije ulogovan)
@@ -65,6 +66,7 @@ return (
      
     <Route path='/signup' element={<SignUp />}/>
      <Route path='/signin' element={<SignIn />}/>
+     <Route path='/edit-article' element={< ArticleCompo/>}/>
      {(userRole &&  loging && logg ) ? (<Route path='/userPage' element={<UserPage />}/> ) : (<Route path='/' element={<Home />}/>)}
      {(selerRole &&  loging && logg ) ? (<Route path='/sellerPage' element={<SelerPage />}/> ) : (<Route path='/' element={<Home />}/>)}
      {(adminRole &&  loging && logg ) ? (<Route path='/adminPage' element={<AdminPage />}/> ) : (<Route path='/' element={<Home />}/>)}

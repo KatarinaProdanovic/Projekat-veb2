@@ -10,9 +10,10 @@
 
           public int UserId { get; set; } // Strani ključ
           public User User { get; set; } // Referenca na korisnika
-
         public List<OrderItem> OrderItems { get; set; }
       
+        public int Price { get; set; }
+        public bool IsCenceled { get; set; } //da li je otkazana porudzbina
         public Order() { }
         }
 

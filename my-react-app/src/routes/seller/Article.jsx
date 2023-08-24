@@ -31,11 +31,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DrawerAppBar from '../../components/navigation/nav.component';
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { setUser } from '../../store/user/actions';
+import { setArticle } from '../../store/article/actions';
 import dayjs from 'dayjs';
 import {ImageUploadContainer, ImageUploadLabel, UploadedImage, UploadPlaceholder, ImageUploadInput} from "../sign-up/sign-up.styles"
 import { RestaurantMenu, VolunteerActivismOutlined } from '@mui/icons-material';
-
+import { useSelector } from 'react-redux'
 
 
 import InputLabel from '@mui/material/InputLabel';
@@ -67,7 +67,6 @@ export default function ArticleCompo() {
   const handleClose = () => {
     setOpen(false);
     setRequesting(false)
-    navigate("/signin")
   };
 
 
@@ -90,6 +89,11 @@ export default function ArticleCompo() {
   
   const [password, setPassword] = React.useState('');
 
+  const [productName, setProductName] = React.useState();
+  const [Quantity, setQuantity] = React.useState();
+  const [Description, setDescription] = React.useState();
+  const [Price, setPrice] = React.useState();
+ 
 
   const [selectedDate, setSelectedDate] = React.useState(null);
   const { sendRequest, isLoading } = useHttp()
@@ -99,9 +103,14 @@ export default function ArticleCompo() {
   const [picture, setPicture] = React.useState(false);
   const [mojTip, setMojTip] = React.useState('');
   
+  const myUser = useSelector(state => state.user.user);
+  console.log(myUser)
+
 
   const handleEmailChange = (e) => {
+
     const value = e.target.value;
+    setPrice(value);
     if (!value.length === 0) {
       setEmailError('Incorrect price');
     } else {
@@ -117,23 +126,9 @@ export default function ArticleCompo() {
       setPasswordError('');
     }
   };
-  const handleConfirmPasswordChange = (e) => {
-    const value = e.target.value;
-   
-    if (value.length < 6) {
-      setConfirmError('Confirm password must be at least 6 characters long');
-
-    } 
-    else if(value !== password)
-    {
-      setConfirmError('Confirm password must be equal to password');
-    }
-    else {
-      setConfirmError('');
-    }
-  };
   const handleNameChange = (e) => {
     const value = e.target.value;
+    setProductName(value);
     if (value.length < 3) {
       setNameError('Name must be at least 2 characters long');
     } else {
@@ -142,6 +137,7 @@ export default function ArticleCompo() {
   };
   const handleLastNameChange = (e) => {
     const value = e.target.value;
+    setQuantity(value);
     if (value.length === 0) {
       setLastNameError('Last name must be at least 3 characters long');
     } else {
@@ -164,18 +160,17 @@ export default function ArticleCompo() {
       );
     });
 
-  const handleImageChange = async (event) => {
-    try {
-      const file = event.target.files[0];
-      setSelectedImage(file);
-      const image = await resizeFile(file);
-      setPicture(image);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-
+    const handleImageChange = async (event) => {
+      try {
+        const file = event.target.files[0];
+        setSelectedImage(file);
+        const image = await resizeFile(file);
+        setPicture(image);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+  
 const handleTypeChange = (event) => {
   setType(event.target.value);
   console.log(type)
@@ -201,8 +196,9 @@ const handleTypeChange = (event) => {
 
   const handleAddressChange = (e) => {
     const value = e.target.value;
+    setDescription(value);
     if (value.length < 6) {
-      setAddressError('Incorrect address');
+      setAddressError('Incorrect description');
     } else {
       setAddressError('');
     }
@@ -262,54 +258,28 @@ const handleTypeChange = (event) => {
 
     try {
       const baseURL = process.env.REACT_APP_URL;
-      const endpoint = '/users/registration';
+      const endpoint = '/products/add';
       console.log(type)
      
-      
-   
-      const requestConfigForExternalUser = {
-        url: `${baseURL}${endpoint}`,
-        method: 'POST',
-      
-        body: JSON.stringify({
-          
-          UserName: data.get('userName'),
-          Email: data.get('email'),
-          Password: data.get('password'),
-          ConfirmPassword : data.get('confirmpassword'),
-          Name : data.get('name'),
-          Surname : data.get('lastName'),
-          Tip : type,
-          Adress : data.get('adresa'),
-          DateOfBirth : dayjs(selectedDate).format('YYYY-MM-DD'),
-          Photo : picture
-          
-        }),
-       headers: {
-          'Content-Type': 'application/json',
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
-      }
+      setProductName(data.get('name'))
+      setQuantity(data.get('lastName'))
+      setDescription( data.get('adresa'))
+      setPrice(data.get('email'))
 
+     console.log(data.get('email'))
       const requestConfigForExternalUser1 = {
         url: `${baseURL}${endpoint}`,
         method: 'POST',
       
         body: JSON.stringify({
           
-          UserName: data.get('userName'),
-          Email: data.get('email'),
-          Password: data.get('password'),
-          ConfirmPassword : data.get('confirmpassword'),
-          Name : data.get('name'),
-          Surname : data.get('lastName'),
-          Tip : type,
-          Adress : data.get('adresa'),
-          DateOfBirth : dayjs(selectedDate).format('YYYY-MM-DD'),
+          ProductName: data.get('name'),
+          Quantity: data.get('lastName'),
+          Description: data.get('adresa'),
+          SellerId: myUser.id,
+          Price : data.get('email'),
           Photo : picture,
-          IsVerified : "InProcessing"
-
-          
+      
         }),
        headers: {
           'Content-Type': 'application/json',
@@ -317,37 +287,32 @@ const handleTypeChange = (event) => {
         }
       }
 
-      if(type === 0){
-        const dataExternalUser = await sendRequest(requestConfigForExternalUser)
-     console.log(dataExternalUser)
-      if(dataExternalUser !== null){
-       //tu mi je vracen ceo objekat korisnika koji je 
-        dispatch(setUser(dataExternalUser))//to je samo korisnik koji ce se prikazivati u profilu
-        setRequesting(true)
-        setOpen(true)
-       
-        //registrovan(to mogu da sacuvam u reduxu i da sluzi za prikaz podataka)
-      }
-      }
-      else{
+     
+  
      const dataExternalUser = await sendRequest(requestConfigForExternalUser1)
      console.log(dataExternalUser)
       if(dataExternalUser !== null){
        //tu mi je vracen ceo objekat korisnika koji je 
-        dispatch(setUser(dataExternalUser))//to je samo korisnik koji ce se prikazivati u profilu
+        dispatch(setArticle(dataExternalUser))
         setRequesting(true)
         setOpen(true)
-       
+        setProductName("")
+        setQuantity("")
+        setDescription("")
+        setSelectedImage(null);
+        setPicture(null);
+        setPrice("")
+      
         
-      }//registrovan(to mogu da sacuvam u reduxu i da sluzi za prikaz podataka)
       }
+
     } catch (error) {
       console.log('failed', error)
     }
 
   };
  
- 
+
   return (
   
     <><DrawerAppBar/>
@@ -380,7 +345,7 @@ const handleTypeChange = (event) => {
             </DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
-            Add article succedfully
+            Add article successfully
               </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -408,15 +373,18 @@ const handleTypeChange = (event) => {
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
             <Grid item xs={5}>
-              <ImageUploadContainer>
+              <ImageUploadContainer >
           <ImageUploadLabel htmlFor="image-upload">
             {selectedImage ? (
               <UploadedImage src={URL.createObjectURL(selectedImage)} alt="Selected" />
             ) : (
               <UploadPlaceholder>Add photo</UploadPlaceholder>
             )}
-             <ImageUploadInput type="file" accept="image/*" onChange={handleImageChange} />
-
+            <ImageUploadInput
+              type="file"
+              id="image-upload"
+              onChange={handleImageChange}
+            />
           </ImageUploadLabel>
         </ImageUploadContainer>
               </Grid>
@@ -431,6 +399,7 @@ const handleTypeChange = (event) => {
                   onChange={handleNameChange}
                   error={!!nameError}
                   helperText={nameError}
+                  value={productName}
                 />
               </Grid>
               
@@ -441,11 +410,12 @@ const handleTypeChange = (event) => {
                   id="email"
                   label="Price"
                   name="email"
-                  type="number"
+                type='number'
                   autoComplete="price"
                   onChange={handleEmailChange}
                   error={!!emailError}
                   helperText={emailError}
+                  value={Price}
                 />
               </Grid>
               
@@ -463,13 +433,9 @@ const handleTypeChange = (event) => {
                   onChange={handleLastNameChange}
                   error={!!lastNameError}
                   helperText={lastNameError}
+                  value={Quantity}
                 />
               </Grid>
-             
-        
-              
-               
-              
               <Grid item xs={12}>
                 <TextField
                   required
@@ -478,9 +444,11 @@ const handleTypeChange = (event) => {
                   label="Description"
                   name="adresa"
                   autoComplete="adresa"
+          
                   onChange={handleAddressChange}
                   error={!!addressError}
                   helperText={addressError}
+                  value={Description}
                 />
               </Grid>
             

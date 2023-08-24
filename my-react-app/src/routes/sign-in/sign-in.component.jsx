@@ -36,7 +36,7 @@ const MyLink = styled(Link)({
 const defaultTheme = createTheme();
 
 export function Logged(tokenExp){
-  const currentTime = Math.floor(Date.now() / 1000); // Pretvaranje trenutnog vremena u sekunde
+  const currentTime = Math.floor(Date.now() / 1000);
  
 if (tokenExp < currentTime) {
   return false;//token istekao
@@ -167,6 +167,7 @@ export default function SignIn() {
       }
 
       if(token !== null){
+       
         const decodedToken = decodeURIComponent(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
         const tokenData = JSON.parse(decodedToken);
         localStorage.setItem('token', token);
@@ -196,6 +197,7 @@ export default function SignIn() {
       
         if(dataExternalUser !== null){
          
+          localStorage.setItem("loging", "nogoogle")
          //tu mi je vracen ceo objekat korisnika koji je 
           dispatch(setUser(dataExternalUser))//to je samo korisnik koji ce se prikazivati u profilu
          

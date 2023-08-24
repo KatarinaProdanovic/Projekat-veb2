@@ -12,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import DisplayPreviousOrdersForSeller from '../../routes/seller/previousOrders';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import Alert from '@mui/material/Alert';
@@ -27,23 +28,23 @@ import { Logged } from '../../routes/sign-in/sign-in.component'
 import { Button } from '@mui/material';
 import { IsAdmin, IsUser, IsSeller, IsVerif } from '../../routes/sign-in/sign-in.component';
 import { setSelleer } from '../../store/sellers/actions';
-
+import DisplayAllArticleInShop from '../../routes/user/allArticlesInShop';
 import Profile from '../../routes/profile/profile.component';
 
-
+import DisplayAllArticle from '../../routes/seller/allArticles';
 import Stack from '@mui/material/Stack';
 
 import ArticleCompo from '../../routes/seller/Article';
-
+import DisplayAllOrders from '../../routes/user/showAllOrders';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
-
+import AllOrdersForAdmin from '../../routes/admin/allOrdersWithStatus';
 import Person2Icon from '@mui/icons-material/Person2';
-
+import DisplayNewOrdersForSeller from '../../routes/seller/newOrders';
 import useHttp from '../../requests-service/useHttp';
 import Swal from 'sweetalert2';
 import Sellers from './sellers.component';
@@ -119,6 +120,7 @@ function Dashboard() {
     const [seller, setSeller] = useState(false)
     const [allOrders, setAllOrders] = useState(false)
 
+    const [allArticles, setAllArticles] = useState(false)
      //koja opcija je pritisnuta-prodavac
     const [dashbSel, setDashbSel] = useState(false)
    const [my, setMyO] = useState(false);
@@ -228,14 +230,6 @@ async function setSel1(){
          dispatch(setSelleer(token))
             
         
-            
-        
-          
-          
-          
-          
-          
-        
         
         } } catch (error) {
             console.log('failed', error)
@@ -274,7 +268,7 @@ async function setSel1(){
   const myOr = () => {
     setNewOrder(false)
     setMyO(true)
-   
+    setAllArticles(false);
     setNewArticl(false)
     setDashbSel(false)
     setProfile(false)
@@ -288,7 +282,8 @@ async function setSel1(){
        
         setNewArticl(false)
         setDashbSel(false)
-        setProfile(false)
+        setProfile(false)  
+        setAllArticles(false);
         setButtonClickCount(prevCount => prevCount + 1);
         
         
@@ -299,7 +294,7 @@ async function setSel1(){
         setNewArticl(true)
         setNewOrder(false)
         setMyO(false)
-       
+        setAllArticles(false);
         setDashbSel(false)
         setProfile(false)
         setButtonClickCount(prevCount => prevCount + 1);
@@ -308,6 +303,20 @@ async function setSel1(){
       
       const setStatus = () => {
         setDashbSel(true)
+        setAllOrders(false);
+        setNewOrder(false)
+        setSeller(false);
+        setNewArticl(false)
+        setMyO(false)
+        setAllArticles(false);
+        setProfile(false)
+        setButtonClickCount(prevCount => prevCount + 1);
+       
+        
+      };
+      const setArticles = () => {
+        setAllArticles(true);
+        setDashbSel(false)
         setAllOrders(false);
         setNewOrder(false)
         setSeller(false);
@@ -368,7 +377,9 @@ async function setSel1(){
         setAllOrders(false);
         setUserPrevOrd(false);
         setUserNewOrd(false);
+        setAllArticles(false);
 /*
+
         const mail1 =  JSON.parse(decodeURIComponent(atob(localStorage.getItem("token").split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))['email']
         console.log(mail1)
         const requestBody = JSON.stringify(mail1);
@@ -573,6 +584,13 @@ async function setSel1(){
       </ListItemIcon>
       <ListItemText primary="New Article" />
     </ListItemButton>)}
+
+    {selerRole && verifying && (<ListItemButton onClick={setArticles}>
+      <ListItemIcon>
+        <ArticleIcon />
+      </ListItemIcon>
+      <ListItemText primary="All articles" />
+    </ListItemButton>)}
     {userRole && (<ListItemButton onClick={setNewUOrd}>
       <ListItemIcon>
         <ArticleIcon />
@@ -617,7 +635,7 @@ async function setSel1(){
               <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                 <Grid container spacing={3}>
                   
-                  
+             
                   {/* Recent Orders */}
                   {seller && (<Grid item xs={12}>
                    
@@ -627,8 +645,7 @@ async function setSel1(){
                  
                   {allOrders && (<Grid item xs={12}>
                     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                     <h1>All oders</h1>
-                     
+                    <AllOrdersForAdmin></AllOrdersForAdmin>
                     </Paper>
                   </Grid>)}
                   {dashbSel && (<Grid item xs={12}>
@@ -649,12 +666,12 @@ async function setSel1(){
                   </Grid>)}
                   {my && (<Grid item xs={12}>
                     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                   <h1>All the my orders</h1>
+                   <DisplayPreviousOrdersForSeller></DisplayPreviousOrdersForSeller>
                     </Paper>
                   </Grid>)}
                   {newOrder && (<Grid item xs={12}>
                     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                   <h1>All the new orders</h1>
+                  <DisplayNewOrdersForSeller></DisplayNewOrdersForSeller>
                     </Paper>
                   </Grid>)}
                   
@@ -662,6 +679,12 @@ async function setSel1(){
                     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                   
                    <ArticleCompo/>
+                    </Paper>
+                  </Grid>)}
+                  {allArticles && (<Grid item xs={12}>
+                    <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+                  
+                   <DisplayAllArticle/>
                     </Paper>
                   </Grid>)}
                   {profilee && (<Grid item xs={12}>
@@ -672,12 +695,12 @@ async function setSel1(){
                   </Grid>)}
                   {userNewOrd && (<Grid item xs={12}>
                     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                   <h1>Add new order</h1>
+                  <DisplayAllArticleInShop></DisplayAllArticleInShop>
                     </Paper>
                   </Grid>)}
                   {userPrevOrd && (<Grid item xs={12}>
                     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                   <h1>All previous order</h1>
+                   <DisplayAllOrders></DisplayAllOrders>
                     </Paper>
                   </Grid>)}
                 </Grid>

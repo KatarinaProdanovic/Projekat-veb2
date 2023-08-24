@@ -154,13 +154,6 @@ export default function Profile() {
   };
   
   //const user = useSelector(state => state.user);
-  
-
-
-
-
-
-  
 
   const handleUserNameChange = (e) => {
     const value = e.target.value;
@@ -389,7 +382,6 @@ const handleTypeChange = (event) => {
         }
       }
 
-     
     const dataExternalUser = await sendRequest(requestConfigForExternalUser)
      console.log(dataExternalUser)
       if(dataExternalUser !== null){
@@ -475,14 +467,14 @@ const handleTypeChange = (event) => {
             <Grid item xs={5}>
             <ImageUploadContainer>
   <ImageUploadLabel htmlFor="image-upload">
-    {selectedImage || typeOfLoging !== "google" ? (
+    {selectedImage ? (
       <UploadedImage src={URL.createObjectURL(selectedImage)} alt="Selected" />
     ) : (
       <UploadedImage src={photoP} alt="Selected" />
     )}
-    {typeOfLoging !== "google" && (
+    { 
       <ImageUploadInput type="file" id="image-upload" onChange={handleImageChange} />
-    )}
+    }
   </ImageUploadLabel>
 </ImageUploadContainer>
               </Grid>
